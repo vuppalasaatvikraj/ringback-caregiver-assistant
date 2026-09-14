@@ -16,7 +16,7 @@ function Assert-Equal {
 }
 
 # Read functions from ringback_server.ps1 without starting the HTTP listener block (lines 1 to 205)
-$serverScript = Get-Content "C:\Users\user\Documents\call-e\ringback_server.ps1" -Raw
+$serverScript = Get-Content (Join-Path $PSScriptRoot "ringback_server.ps1") -Raw
 $functionsOnly = $serverScript.Substring(0, $serverScript.IndexOf('$listener ='))
 Invoke-Expression $functionsOnly
 
@@ -132,7 +132,7 @@ Assert-Equal "Test T2 self intro" ($taskShape -match 'introducing yourself') $tr
 Assert-Equal "Test T3 names recipient" ($taskShape -match "Sharma") $true
 
 # Address book: learn once, resolve next time with no number given
-$abPath = "C:\Users\user\Documents\call-e\ringback_addressbook.json"
+$abPath = Join-Path $PSScriptRoot "ringback_addressbook.json"
 $hadAb = Test-Path -LiteralPath $abPath
 $abBak = $null
 if ($hadAb) { $abBak = Get-Content -LiteralPath $abPath -Raw -Encoding utf8 }
@@ -171,7 +171,7 @@ $minedNone = @(Find-FollowupNumbers @(@{ speaker = "user"; text = "Yes, all done
 Assert-Equal "Test F2 none" $minedNone.Count 0
 
 # Follow-up ref roundtrip via history (backup/restore real file)
-$hp2 = "C:\Users\user\Documents\call-e\ringback_history.json"
+$hp2 = Join-Path $PSScriptRoot "ringback_history.json"
 $hadH2 = Test-Path -LiteralPath $hp2
 $bak2 = $null
 if ($hadH2) { $bak2 = Get-Content -LiteralPath $hp2 -Raw -Encoding utf8 }
@@ -182,12 +182,12 @@ Assert-Equal "Test F4 followup source" $resF.source "call_followup"
 if ($hadH2) { $bak2 | Set-Content -LiteralPath $hp2 -Encoding utf8 } else { Remove-Item -LiteralPath $hp2 -ErrorAction SilentlyContinue }
 
 # JSON loader returns a flat array (PS 5.1 @(ConvertFrom-Json) nesting guard)
-$flatCheck = @(Read-JsonArray "C:\Users\user\Documents\call-e\contacts.json")
+$flatCheck = @(Read-JsonArray (Join-Path $PSScriptRoot "contacts.json"))
 Assert-Equal "Test J1 flat count" $flatCheck.Count 3
 Assert-Equal "Test J2 flat scalar" ($flatCheck[0].phone -is [string]) $true
 
 # Custom contacts: saved offices resolve henceforth (backup/restore real file)
-$ccPath = "C:\Users\user\Documents\call-e\ringback_custom_contacts.json"
+$ccPath = Join-Path $PSScriptRoot "ringback_custom_contacts.json"
 $hadCc = Test-Path -LiteralPath $ccPath
 $ccBak = $null
 if ($hadCc) { $ccBak = Get-Content -LiteralPath $ccPath -Raw -Encoding utf8 }
@@ -202,7 +202,7 @@ Assert-Equal "Test C2 custom phone" $resCc.phone "+15557654321"
 if ($hadCc) { $ccBak | Set-Content -LiteralPath $ccPath -Encoding utf8 } else { Remove-Item -LiteralPath $ccPath -ErrorAction SilentlyContinue }
 
 # History roundtrip (backup/restore real file)
-$hp = "C:\Users\user\Documents\call-e\ringback_history.json"
+$hp = Join-Path $PSScriptRoot "ringback_history.json"
 $hadHist = Test-Path -LiteralPath $hp
 $bak = $null
 if ($hadHist) { $bak = Get-Content -LiteralPath $hp -Raw -Encoding utf8 }

@@ -1,5 +1,5 @@
 # Starts ringback_server.ps1 detached with startup logging
-$Root = "C:\Users\user\Documents\call-e"
+$Root = $PSScriptRoot
 $Log = Join-Path $Root "server_startup.log"
 "START ATTEMPT $(Get-Date -Format o)" | Out-File $Log -Encoding utf8
 try {
